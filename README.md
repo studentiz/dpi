@@ -48,7 +48,7 @@ dpi.fit(sc_data)
 ```
 * Visualize the loss
 ```python
-loss_plot(sc_data)
+dpi.loss_plot(sc_data)
 ```
 ### Visualize the latent space
 * Extract latent spaces
@@ -57,7 +57,27 @@ dpi.get_spaces(sc_data)
 ```
 * Visualize the spaces
 ```python
-space_plot(sc_data, "mm_parameter_space", color="green", kde=True, bins=30)
-space_plot(sc_data, "rna_latent_space", color="orange", kde=True, bins=30)
-space_plot(sc_data, "pro_latent_space", color="blue", kde=True, bins=30)
+dpi.space_plot(sc_data, "mm_parameter_space", color="green", kde=True, bins=30)
+dpi.space_plot(sc_data, "rna_latent_space", color="orange", kde=True, bins=30)
+dpi.space_plot(sc_data, "pro_latent_space", color="blue", kde=True, bins=30)
+```
+### Downstream Analysis
+* Extract features
+```python
+dpi.get_features(sc_data)
+```
+* Get denoised datas
+```python
+dpi.get_denoised_rna(sc_data)
+dpi.get_denoised_pro(sc_data)
+```
+* Cell clustering
+```python
+sc.pp.neighbors(sc_data, use_rep="mix_features")
+dpi.umap_run(sc_data, min_dist=0.4)
+sc.tl.leiden(sc_data)
+```
+* Cell cluster visualization
+```python
+sc.pl.umap(sc_data, color="leiden")
 ```
