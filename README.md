@@ -13,7 +13,7 @@ pip install dpi-sc
 ## The datasets
 The dataset participating in "Single-cell multimodal modeling with deep parametric inference" can be downloaded at http://data.dpimodel.cloud
 ## Tutorial
-* DPI analysis of single-cell multimodal data using PBMC1k dataset as an example
+* We use pbmc1k data set to demonstrate the process of DPI analysis of single cell multimodal data.
 ### Import dependencies
 ```python
 import scanpy as sc
