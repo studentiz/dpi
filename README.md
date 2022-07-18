@@ -61,7 +61,7 @@ dpi.space_plot(sc_data, "mm_parameter_space", color="green", kde=True, bins=30)
 dpi.space_plot(sc_data, "rna_latent_space", color="orange", kde=True, bins=30)
 dpi.space_plot(sc_data, "pro_latent_space", color="blue", kde=True, bins=30)
 ```
-### Downstream Analysis
+### Preparation for downstream analysis
 * Extract features
 ```python
 dpi.get_features(sc_data)
@@ -71,6 +71,7 @@ dpi.get_features(sc_data)
 dpi.get_denoised_rna(sc_data)
 dpi.get_denoised_pro(sc_data)
 ```
+### Cell clustering and visualization
 * Cell clustering
 ```python
 sc.pp.neighbors(sc_data, use_rep="mix_features")
