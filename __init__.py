@@ -1,5 +1,5 @@
 ####################################################################
-#### Single-cell multi-omics modeling with deep parametric inference
+#### Single-cell multimodal modeling with deep parametric inference
 ####################################################################
 
 import sys, os
@@ -616,7 +616,7 @@ def perturbation_run(sc_data, feature, amplitude=1, obs="", perturbed_clusters="
         
     elif "protein"==featuretype:
         sc_data.obsm["pro_perturbation"] = sc_data.obsm["pro_nor"].copy()
-        temp_index = np.where(sc_data.obsm["protein_expression"].columns==feature)[0]
+        temp_index = np.where(sc_data.uns["adt"]==feature)[0]
         if len(temp_index)<=0:
             raise Exception(print("can not find ",feature," in protein features"))
         
@@ -754,11 +754,12 @@ def referencedata(sc_data_ref, sc_data, celltypes):
     return sc_data_ref
 
 def annotate(ref_data, ref_labelname, query_data):
+    print("Mapping the multimodal parameter space.")
     query_data.obsm["mix_mean"] = Model(inputs=ref_data.mix_model.inputs, outputs=ref_data.mix_model.get_layer("mix_mean").output).predict([query_data.obsm["rna_nor"], query_data.obsm["pro_nor"]])
     query_data.obsm["X_umap"] = ref_data.umap_mapper.transform(query_data.obsm["mix_mean"])
-    
-    query_data.obsm["ref_mix_mean_cosmtx"] = dpi.get_cos_similar_matrix(query_data.obsm["mix_mean"], ref_data.obsm["mix_features"]).astype("float16")
-    
+    print("Calculating cosine similarity.")
+    query_data.obsm["ref_mix_mean_cosmtx"] = get_cos_similar_matrix(query_data.obsm["mix_mean"], ref_data.obsm["mix_features"]).astype("float16")
+    print("Setting cell labels.")
     referencedata(query_data, ref_data, celltypes=ref_labelname)
     
     return query_data
@@ -947,8 +948,11 @@ def plot_vector_field(sc_data: AnnData, reverse: bool = False, zs_key: str = 'mi
 
     return ax
 
-def cell_state_vector_field(sc_data, feature, amplitude=2, obs="", perturbed_clusters="all", featuretype="rna", mode="multiple", zs_key="mix_features", vf_key='VF', use_rep_neigh="mix_features", E_key="umap", legend_loc='none', frameon=False, size=100, alpha=0.2, density=0.5, grid=False, **kwargs):
+def cell_state_vector_field(sc_data, feature, amplitude=2, obs="", perturbed_clusters="all", featuretype="rna", mode="multiple", zs_key="mix_features", vf_key='VF', use_rep_neigh="mix_features", E_key="umap", legend_loc='none', frameon=False, size=100, alpha=0.2, density=0.5, grid=False, figsize=(5, 5), **kwargs):
+    print("Simulating perturbation.")
     perturbation_run(sc_data, feature, amplitude, obs, perturbed_clusters, featuretype, mode)
+    print("Calculating vector field.")
     cell_vector_field_run(sc_data)
-    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(5, 5))
+    print("Plotting cell state vector field.")
+    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=figsize)
     return plot_vector_field(sc_data, E_key=E_key, zs_key=zs_key, vf_key=vf_key, use_rep_neigh=use_rep_neigh, color=obs, ax=axs, legend_loc=legend_loc, frameon=frameon, size=size, alpha=alpha, density=density, grid=grid, **kwargs)
