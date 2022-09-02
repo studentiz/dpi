@@ -19,6 +19,11 @@ The dataset participating in "Single-cell multimodal modeling with deep parametr
 import scanpy as sc
 import dpi
 ```
+### Retina image output (optional)
+```python
+%matplotlib inline
+%config InlineBackend.figure_format = 'retina'
+```
 ### Load dataset
 ```python
 sc_data = sc.read_h5ad("PBMC1k_data.h5ad")
