@@ -1,6 +1,7 @@
-####################################################################
-#### Single-cell multimodal modeling with deep parametric inference
-####################################################################
+###########################################################################################
+#### Modeling and analyzing single-cell multimodal data with deep parametric inference
+#### Author:studentiz@live.com
+###########################################################################################
 
 import sys, os
 import pickle
@@ -753,7 +754,10 @@ def referencedata(sc_data_ref, sc_data, celltypes):
     
     return sc_data_ref
 
-def annotate(ref_data, ref_labelname, query_data):
+def annotate(ref_data, ref_labelname, query_data): 
+    print("Converting data.")
+    query_data.obsm["rna_nor"] = ref_data.mm_rna.transform(query_data.X).astype("float16")
+    query_data.obsm["pro_nor"] = ref_data.mm_pro.transform(query_data.obsm["pro_nor"]).astype("float16")
     print("Mapping the multimodal parameter space.")
     query_data.obsm["mix_mean"] = Model(inputs=ref_data.mix_model.inputs, outputs=ref_data.mix_model.get_layer("mix_mean").output).predict([query_data.obsm["rna_nor"], query_data.obsm["pro_nor"]])
     query_data.obsm["X_umap"] = ref_data.umap_mapper.transform(query_data.obsm["mix_mean"])
