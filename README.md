@@ -50,15 +50,15 @@ sc_data = sc_data[:,sc_data.var["highly_variable"]]
 dpi.scale(sc_data)
 ```
 ### Prepare and run DPI model
-* Configure DPI model parameters
+Configure DPI model parameters
 ```python
 dpi.build_mix_model(sc_data, net_dim_rna_list=[512, 128], net_dim_pro_list=[128], net_dim_rna_mean=128, net_dim_pro_mean=128, net_dim_mix=128, lr=0.0001)
 ```
-* Run DPI model
+Run DPI model
 ```python
 dpi.fit(sc_data)
 ```
-* Visualize the loss
+Visualize the loss
 ```python
 dpi.loss_plot(sc_data)
 ```
@@ -68,34 +68,34 @@ dpi.saveobj2file(sc_data, "COVID19PBMC_healthy.dpi")
 #sc_data = dpi.loadobj("COVID19PBMC_healthy.dpi")
 ```
 ### Visualize the latent space
-* Extract latent spaces
+Extract latent spaces
 ```python
 dpi.get_spaces(sc_data)
 ```
-* Visualize the spaces
+Visualize the spaces
 ```python
 dpi.space_plot(sc_data, "mm_parameter_space", color="green", kde=True, bins=30)
 dpi.space_plot(sc_data, "rna_latent_space", color="orange", kde=True, bins=30)
 dpi.space_plot(sc_data, "pro_latent_space", color="blue", kde=True, bins=30)
 ```
 ### Preparation for downstream analysis
-* Extract features
+Extract features
 ```python
 dpi.get_features(sc_data)
 ```
-* Get denoised datas
+Get denoised datas
 ```python
 dpi.get_denoised_rna(sc_data)
 dpi.get_denoised_pro(sc_data)
 ```
 ### Cell clustering and visualization
-* Cell clustering
+Cell clustering
 ```python
 sc.pp.neighbors(sc_data, use_rep="mix_features")
 dpi.umap_run(sc_data, min_dist=0.4)
 sc.tl.leiden(sc_data)
 ```
-* Cell cluster visualization
+Cell cluster visualization
 ```python
 sc.pl.umap(sc_data, color="leiden")
 ```
