@@ -119,7 +119,7 @@ sc.pl.umap(sc_data, color="initial_clustering", frameon=False, title="PBMC COVID
 Demonstrate reference and query capabilities with unannotated asymptomatic COVID-19 PBMCs.
 ```python
 # The dataset can be downloaded from [Datasets] above.
-filepath = "/home/hh/bigdata/hh/DPI/COVID-19/COVID19_Asymptomatic.h5ad"
+filepath = "COVID19_Asymptomatic.h5ad"
 sc_data_COVID19_Asymptomatic = sc.read_h5ad(filepath)
 ```
 Unannotated data also needs to be normalized.
