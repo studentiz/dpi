@@ -110,3 +110,32 @@ Protein markers
 dpi.umap_plot(sc_data, featuretype="protein", color=protein_markers, ncols=2)
 dpi.umap_plot(sc_data, featuretype="protein", color=protein_markers, ncols=2, layer="pro_denoised")
 ```
+### Reference and query
+Reference objects need to be pre-set with cell labels.
+```python
+sc.pl.umap(sc_data, color="initial_clustering", frameon=False, title="PBMC COVID19 Healthy labels")
+```
+```python
+# The dataset can be downloaded from [Datasets] above.
+filepath = "/home/hh/bigdata/hh/DPI/COVID-19/COVID19_Asymptomatic.h5ad"
+sc_data_COVID19_Asymptomatic = sc.read_h5ad(filepath)
+```
+```python
+dpi.normalize(sc_data_COVID19_Asymptomatic, protein_expression_obsm_key="protein_expression")
+```
+```python
+sc_data_COVID19_Asymptomatic = sc_data_COVID19_Asymptomatic[:,sc_data.var.index]
+```
+```python
+sc_data_COVID19_Asymptomatic.obsm["rna_nor"] = sc_data.mm_rna.transform(sc_data_COVID19_Asymptomatic.X).astype("float16")
+sc_data_COVID19_Asymptomatic.obsm["pro_nor"] = sc_data.mm_pro.transform(sc_data_COVID19_Asymptomatic.obsm["pro_nor"]).astype("float16")
+```
+```python
+dpi.annotate(sc_data, ref_labelname="initial_clustering", sc_data_COVID19_Asymptomatic)
+```
+```python
+sc.pl.umap(sc_data_COVID19_Asymptomatic, color="labels", frameon=False, title="PBMC COVID19 Asymptomatic Annotated")
+```
+```python
+sc.pl.umap(sc_data_COVID19_Asymptomatic, color="initial_clustering", frameon=False, title="PBMC COVID19 Asymptomatic labels")
+```
