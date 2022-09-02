@@ -29,6 +29,11 @@ import dpi
 # The dataset can be downloaded from [Datasets] above.
 sc_data = sc.read_h5ad("PBMC_COVID19_Healthy_Annotated.h5ad")
 ```
+### Set marker collection
+```python
+rna_markers = ["CCR7", "CD19", "CD3E", "CD4"]
+protein_markers = ["AB_CCR7", "AB_CD19", "AB_CD3", "AB_CD4"]
+```
 ### Preprocessing
 ```python
 dpi.preprocessing(sc_data)
@@ -40,6 +45,7 @@ sc.pp.highly_variable_genes(
     flavor="seurat_v3",
     subset=False
 )
+dpi.add_genes(sc_data, rna_markers)
 sc_data = sc_data[:,sc_data.var["highly_variable"]]
 dpi.scale(sc_data)
 ```
