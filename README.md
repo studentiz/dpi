@@ -26,7 +26,8 @@ import dpi
 ```
 ### Load dataset
 ```python
-sc_data = sc.read_h5ad("PBMC1k_data.h5ad")
+# The dataset can be downloaded from [Datasets] above.
+sc_data = sc.read_h5ad("PBMC_COVID19_Healthy_Annotated.h5ad")
 ```
 ### Preprocessing
 ```python
@@ -54,6 +55,11 @@ dpi.fit(sc_data)
 * Visualize the loss
 ```python
 dpi.loss_plot(sc_data)
+```
+### Save DPI model (optional)
+```python
+dpi.saveobj2file(sc_data, "COVID19PBMC_healthy.dpi")
+#sc_data = dpi.loadobj("COVID19PBMC_healthy.dpi")
 ```
 ### Visualize the latent space
 * Extract latent spaces
