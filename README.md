@@ -130,11 +130,6 @@ Referenced and queried objects require alignment features.
 ```python
 sc_data_COVID19_Asymptomatic = sc_data_COVID19_Asymptomatic[:,sc_data.var.index]
 ```
-Unannotated objects need to be normalized again with pretrained objects.
-```python
-sc_data_COVID19_Asymptomatic.obsm["rna_nor"] = sc_data.mm_rna.transform(sc_data_COVID19_Asymptomatic.X).astype("float16")
-sc_data_COVID19_Asymptomatic.obsm["pro_nor"] = sc_data.mm_pro.transform(sc_data_COVID19_Asymptomatic.obsm["pro_nor"]).astype("float16")
-```
 Run the automated annotation function.
 ```python
 dpi.annotate(sc_data, ref_labelname="initial_clustering", sc_data_COVID19_Asymptomatic)
