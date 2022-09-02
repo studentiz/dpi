@@ -99,3 +99,14 @@ sc.tl.leiden(sc_data)
 ```python
 sc.pl.umap(sc_data, color="leiden")
 ```
+### Observe multimodal data markers
+RNA markers
+```python
+dpi.umap_plot(sc_data, featuretype="rna", color=rna_markers, ncols=2)
+dpi.umap_plot(sc_data, featuretype="rna", color=rna_markers, ncols=2, layer="rna_denoised")
+```
+Protein markers
+```python
+dpi.umap_plot(sc_data, featuretype="protein", color=protein_markers, ncols=2)
+dpi.umap_plot(sc_data, featuretype="protein", color=protein_markers, ncols=2, layer="pro_denoised")
+```
