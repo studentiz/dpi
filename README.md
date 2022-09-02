@@ -143,3 +143,8 @@ Visualize the annotated object.
 ```python
 sc.pl.umap(sc_data_COVID19_Asymptomatic, color="labels", frameon=False, title="PBMC COVID19 Asymptomatic Annotated")
 ```
+### Cell state vector field
+Simulates the cellular state when the CCR7 protein is amplified 2-fold.
+```python
+dpi.cell_state_vector_field(sc_data, feature="AB_CCR7", amplitude=2, obs="initial_clustering", featuretype="protein")
+```
