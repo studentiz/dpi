@@ -346,6 +346,12 @@ def fit(sc_data, mode="mm", epochs=500, batch_size=64, validation_split=0.1, pat
     
     sc_data.estimator = estimator
 
+def loss_plot(sc_data):
+    plt.plot(sc_data.estimator.history["loss"],'-o',label='Training_loss')
+    plt.plot(sc_data.estimator.history["val_loss"],'-o',label='Validation_loss')
+    plt.legend(loc='upper right')
+    plt.title("Loss of DPI Model")
+
 def get_features(sc_data, mode="mm", return_value=False):
     
     mix_model = sc_data.mix_model
@@ -695,6 +701,34 @@ def get_cos_similar_matrix(v1, v2):
     res[np.isneginf(res)] = 0
     return 0.5 + 0.5 * res
 
+def cell_state_degree_plot(sc_data, title, colorbar=True, **kwargs):
+    temp = sc_data.obsm["mix_features"]-sc_data.obsm["perturbation_mix_mean"]
+    temp = np.power(temp, 2)
+    temp = np.sum(temp, axis=1)
+    temp = np.sqrt(temp)
+    x = sc_data.obsm["X_umap"][:,0]
+    y = sc_data.obsm["X_umap"][:,1]
+    df = pd.DataFrame({"x":x, "y":y, "degree":temp})
+    plt.axis('off')
+    plt.scatter(x=df["x"], y=df["y"], c=df["degree"], **kwargs)
+    plt.title(title)
+    if colorbar:
+        plt.colorbar()
+
+def cell_state_umap_degree_plot(sc_data, title, colorbar=True, **kwargs):
+    temp = sc_data.obsm["X_umap"]-sc_data.obsm["X_umap_perturbation"]
+    temp = np.power(temp, 2)
+    temp = np.sum(temp, axis=1)
+    temp = np.sqrt(temp)
+    x = sc_data.obsm["X_umap"][:,0]
+    y = sc_data.obsm["X_umap"][:,1]
+    df = pd.DataFrame({"x":x, "y":y, "degree":temp})
+    plt.axis('off')
+    plt.scatter(x=df["x"], y=df["y"], c=df["degree"], **kwargs)
+    plt.title(title)
+    if colorbar:
+        plt.colorbar()
+
 def fluctuation_vis(sc_data, **kwargs):
     cos_similar_matrix = get_cos_similar_matrix(sc_data.obsm["perturbation_mix_mean"], sc_data.obsm["mix_features"])
     fluctuation = cos_similar_matrix[range(0,perturbation_mix_mean.shape[0]), range(0,perturbation_mix_mean.shape[0])]
@@ -719,13 +753,15 @@ def referencedata(sc_data_ref, sc_data, celltypes):
     
     return sc_data_ref
 
-def get_cos_similar_matrix(v1, v2):
-    num = np.dot(v1, np.array(v2).T)
-    denom = np.linalg.norm(v1, axis=1).reshape(-1, 1) * np.linalg.norm(v2, axis=1)
-    res = num / denom
-    res[np.isneginf(res)] = 0
-    res = 0.5 + 0.5 * res
-    return res
+def annotate(ref_data, ref_labelname, query_data):
+    query_data.obsm["mix_mean"] = Model(inputs=ref_data.mix_model.inputs, outputs=ref_data.mix_model.get_layer("mix_mean").output).predict([query_data.obsm["rna_nor"], query_data.obsm["pro_nor"]])
+    query_data.obsm["X_umap"] = ref_data.umap_mapper.transform(query_data.obsm["mix_mean"])
+    
+    query_data.obsm["ref_mix_mean_cosmtx"] = dpi.get_cos_similar_matrix(query_data.obsm["mix_mean"], ref_data.obsm["mix_features"]).astype("float16")
+    
+    referencedata(query_data, ref_data, celltypes=ref_labelname)
+    
+    return query_data
 
 def l2_norm(x, axis=-1):
     if issparse(x):
@@ -875,7 +911,7 @@ def vector_field_embedding_grid(E: np.ndarray, V: np.ndarray, smooth: float = 0.
     return E_grid, V_grid
 
 
-def plot_vector_field(sc_data: AnnData, reverse: bool = False, zs_key: Optional[str] = None, vf_key: str = 'VF', run_neigh: bool = True, use_rep_neigh: Optional[str] = None, t_key: Optional[str] = None, n_neigh: int = 20, var_stabilize_transform: bool = False, E_key: str = 'umap', scale: int = 10, self_transition: bool = False, smooth: float = 0.5, grid: bool = False, stream: bool = True, stream_density: int = 2, stream_color: str = 'k', linewidth: int = 1, arrowsize: int = 1, density: float = 1., arrow_size_grid: int = 5, color: Optional[str] = None, ax: Optional[Axes] = None, **kwargs):
+def plot_vector_field(sc_data: AnnData, reverse: bool = False, zs_key: str = 'mix_features', vf_key: str = 'VF', run_neigh: bool = True, use_rep_neigh: str = 'mix_features', t_key: Optional[str] = None, n_neigh: int = 20, var_stabilize_transform: bool = False, E_key: str = 'umap', scale: int = 10, self_transition: bool = False, smooth: float = 0.5, grid: bool = False, stream: bool = True, stream_density: int = 2, stream_color: str = 'k', linewidth: int = 1, arrowsize: int = 1, density: float = 1., arrow_size_grid: int = 5, color: Optional[str] = None, ax: Optional[Axes] = None, **kwargs):
     
     sc_data.obsp['cosine_similarity'] = cosine_similarity_velo(sc_data, reverse = reverse, zs_key = zs_key, vf_key = vf_key, run_neigh = run_neigh, use_rep_neigh = use_rep_neigh, t_key = t_key, n_neigh = n_neigh, var_stabilize_transform = var_stabilize_transform)
     
@@ -911,5 +947,8 @@ def plot_vector_field(sc_data: AnnData, reverse: bool = False, zs_key: Optional[
 
     return ax
 
-def cell_state_vector_field(sc_data, feature, amplitude=1, obs="", perturbed_clusters="all", featuretype="rna", mode="multiple", reverse: bool = False, zs_key: Optional[str] = None, vf_key: str = 'VF', run_neigh: bool = True, use_rep_neigh: Optional[str] = None, t_key: Optional[str] = None, n_neigh: int = 20, var_stabilize_transform: bool = False, E_key: str = 'umap', scale: int = 10, self_transition: bool = False, smooth: float = 0.5, grid: bool = False, stream: bool = True, stream_density: int = 2, stream_color: str = 'k', linewidth: int = 1, arrowsize: int = 1, density: float = 1., arrow_size_grid: int = 5, color: Optional[str] = None, ax: Optional[Axes] = None, **kwargs):
+def cell_state_vector_field(sc_data, feature, amplitude=2, obs="", perturbed_clusters="all", featuretype="rna", mode="multiple", zs_key="mix_features", vf_key='VF', use_rep_neigh="mix_features", E_key="umap", legend_loc='none', frameon=False, size=100, alpha=0.2, density=0.5, grid=False, **kwargs):
     perturbation_run(sc_data, feature, amplitude, obs, perturbed_clusters, featuretype, mode)
+    cell_vector_field_run(sc_data)
+    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(5, 5))
+    return plot_vector_field(sc_data, E_key=E_key, zs_key=zs_key, vf_key=vf_key, use_rep_neigh=use_rep_neigh, color=obs, ax=axs, legend_loc=legend_loc, frameon=frameon, size=size, alpha=alpha, density=density, grid=grid, **kwargs)
