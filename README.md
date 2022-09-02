@@ -57,7 +57,7 @@ dpi.build_mix_model(sc_data, net_dim_rna_list=[512, 128], net_dim_pro_list=[128]
 ```
 Run DPI model
 ```python
-dpi.fit(sc_data)
+dpi.fit(sc_data, batch_size=256)
 ```
 Visualize the loss
 ```python
