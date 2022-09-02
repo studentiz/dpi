@@ -14,7 +14,7 @@ pip install dpi-sc
 ## Datasets
 The dataset participating in "Single-cell multimodal modeling with deep parametric inference" can be downloaded at [DPI data warehouse](http://101.34.64.251:88/)
 ## Tutorial
-We use pbmc1k data set to demonstrate the process of DPI analysis of single cell multimodal data.
+We use Peripheral Blood Mononuclear Cell (PBMC) dataset to demonstrate the process of DPI analysis of single cell multimodal data. The following code is recommended to run on a computer with more than 64G memory.
 ### Import dependencies
 ```python
 import scanpy as sc
