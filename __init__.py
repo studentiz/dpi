@@ -359,20 +359,25 @@ def get_features(sc_data, mode="mm", return_value=False):
     rna_model = sc_data.rna_model
     pro_model = sc_data.pro_model
     
-    if "mm"==mode and not(mix_model is None):        
+    if "mm"==mode and not(mix_model is None):
+        print("Extracting RNA features.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("encoder_rna_mean").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["rna_features"] = mode_features
         
+        print("Extracting protein features.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("encoder_pro_mean").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["pro_features"] = mode_features
         
+        print("Extracting multimodal features.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("mix_mean").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["mix_features"] = mode_features
         
     elif "rna"==mode and not(rna_model is None):
+        print("Extracting RNA features.")
         mode_features = Model(inputs=rna_model.inputs, outputs=rna_model.get_layer("encoder_rna_mean").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["rna_features"] = mode_features
     elif "pro"==mode and not(pro_model is None):
+        print("Extracting protein features.")
         mode_features = Model(inputs=pro_model.inputs, outputs=pro_model.get_layer("encoder_pro_mean").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["pro_features"] = mode_features
     else:
@@ -387,21 +392,27 @@ def get_spaces(sc_data, mode="mm", return_value=False):
     rna_model = sc_data.rna_model
     pro_model = sc_data.pro_model
     
-    if "mm"==mode and not(mix_model is None):        
+    if "mm"==mode and not(mix_model is None):   
+        
+        print("Generating RNA latent space.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("z_rna").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["rna_latent_space"] = mode_features
         
+        print("Generating protein latent space.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("z_pro").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
-        sc_data.obsm["pro_latent_space"] = mode_features
+        sc_data.obsm["pro_latent_space"] = mode_features   
         
+        print("Generating multimodal parameter space.")
         mode_features = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("z_mix").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["mm_parameter_space"] = mode_features
         
     elif "rna"==mode and not(rna_model is None):
+        print("Generating RNA latent space.")
         mode_features = Model(inputs=rna_model.inputs, outputs=rna_model.get_layer("z_rna").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["rna_latent_space"] = mode_features
         
     elif "pro"==mode and not(pro_model is None):
+        print("Generating protein latent space.")
         mode_features = Model(inputs=pro_model.inputs, outputs=pro_model.get_layer("z_pro").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
         sc_data.obsm["pro_latent_space"] = mode_features
     else:
@@ -432,6 +443,8 @@ def get_denoised_rna(sc_data, return_value=False):
     rna_model = sc_data.rna_model
     pro_model = sc_data.pro_model
     
+    print("Extracting denoised RNA data.")
+    
     if not(mix_model is None):
         temp_denoised_rna = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("rna_denoised").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
     elif not(rna_model is None):
@@ -452,7 +465,9 @@ def get_denoised_pro(sc_data, return_value=False):
     
     mix_model = sc_data.mix_model
     rna_model = sc_data.rna_model
-    pro_model = sc_data.pro_model    
+    pro_model = sc_data.pro_model
+    
+    print("Extracting denoised protein data.")
     
     if not(mix_model is None):
         temp_denoised_pro = Model(inputs=mix_model.inputs, outputs=mix_model.get_layer("pro_denoised").output).predict([sc_data.obsm["rna_nor"], sc_data.obsm["pro_nor"]])
@@ -636,7 +651,7 @@ def perturbation_run(sc_data, feature, amplitude=1, obs="", perturbed_clusters="
         sc_data.obsm["rna_perturbation"] = sc_data.obsm["rna_nor"].copy()
     
     else:
-        raise Exception(print("unkonw perturbation mode. DPI only support rna or protein perturbation"))
+        raise Exception(print("unkonw perturbation mode. DPI only support rna or protein perturbation."))
         
     perturbation_mix_mean = Model(inputs=sc_data.mix_model.inputs, outputs=sc_data.mix_model.get_layer("mix_mean").output).predict([sc_data.obsm["rna_perturbation"], sc_data.obsm["pro_perturbation"]])
     sc_data.obsm["perturbation_mix_mean"] = perturbation_mix_mean
