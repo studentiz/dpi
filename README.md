@@ -1,4 +1,5 @@
 # Modeling and analyzing single-cell multimodal data with deep parametric inference
+Hu H, Feng Z, Lin H, et al., Modeling and analyzing single-cell multimodal data with deep parametric inference, Brief Bioinform, 2023 Jan 19;24(1):bbad005.
 The proliferation of single-cell multimodal sequencing technologies has enabled us to understand cellular heterogeneity with multiple views, providing novel and actionable biological insights into the disease-driving mechanisms. Here, we propose a comprehensive end-to-end single-cell multimodal data analysis framework named Deep Parametric Inference (DPI). The python packages, datasets and user-friendly manuals of DPI are freely available at https://github.com/studentiz/dpi.
 
 ## The dpi framework works with scanpy and supports the following single-cell multimodal analyses
